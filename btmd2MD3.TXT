@@ -1,0 +1,167 @@
+create database cuonghandsome;
+use cuonghandsome;
+create table students
+(
+    id      int primary key auto_increment,
+    name    varchar(50)   not null,
+    address varchar(50)   not null,
+    sex     bit default 1 not null,
+    age     int           not null check ( age between 18 and 25),
+    email   varchar(50)   not null unique,
+    phone   varchar(10)   not null
+);
+
+create table classes
+(
+    id   int primary key auto_increment,
+    name varchar(50) not null unique
+);
+
+alter table students
+    add class_id int; #Bổ sung cột class_id vào class students
+alter table students
+    add foreign key (class_id) references classes (id); # Khóa ngoại class students và class classes
+insert into classes(name) value ('C1121G1');
+insert into classes(name) value ('C1121G2');
+insert into classes(name) value ('C1121G3');
+insert into classes(name) value ('C1121G4');
+insert into classes(name) value ('C1121G5');
+
+
+insert into students(name, address, sex, age, email, phone, class_id) value ('Cường', 'Đắk lak', 1, 18,
+                                                                             'tuancuong15yghgf682003@gmail.com',
+                                                                             '0364113841', 1);
+insert into students(name, address, sex, age, email, phone, class_id) value ('Thủy', 'Hà Nội', 1, 19,
+                                                                             'tuancuong2trrjyh682003@gmail.com',
+                                                                             '0364113841', 2);
+insert into students(name, address, sex, age, email, phone, class_id) value ('Minh', 'Hà Nội', 1, 20,
+                                                                             'tuancuong6urể2003@gmail.com',
+                                                                             '0364113841', 2);
+insert into students(name, address, sex, age, email, phone, class_id) value ('Luýt', 'Quảng Nam', 1, 21,
+                                                                             'tuancuong68ư2003@gmail.com', '0364113841',
+                                                                             3);
+insert into students(name, address, sex, age, email, phone, class_id) value ('Thắng', 'Quảng Nam', 1, 22,
+                                                                             'tuancuong68gư2003@gmail.com',
+                                                                             '0364113841', 5);
+insert into students(name, address, sex, age, email, phone, class_id) value ('Huấn', 'Hải Phòng', 1, 23,
+                                                                             'tuancauong682003@gmail.com', '0364113841',
+                                                                             4);
+insert into students(name, address, sex, age, email, phone, class_id) value ('Sang', 'Đà Nẵng', 1, 24,
+                                                                             'tuancuosfngs682a003@gmail.com',
+                                                                             '0364113841', 1);
+insert into students(name, address, sex, age, email, phone, class_id) value ('Hoa', 'HCM', 0, 24, 'tuancuosdng6s82a003@gmail.com', '0364113841', 3);
+insert into students(name, address, sex, age, email, phone, class_id) value ('Quỳnh', 'HCM', 0, 24,
+                                                                             'tuancudsfong682003@gmail.com',
+                                                                             '0364113841', 3);
+insert into students(name, address, sex, age, email, phone, class_id) value ('Thảo', 'Hà Nội', 0, 24,
+                                                                             'tuancsuong682003@gmail.com', '0364113841',
+                                                                             5);
+
+delete
+from students
+where id = 11; #Xóa theo id
+
+select *
+from students; #Hiển thị tất cả học viên
+
+select *
+from students
+where sex = 1; #hiển thị tất cả học viên nam
+
+select *
+from students
+where age <= 20; #hiển thị những học viên nhỏ hơn hoặc bằng 20 tuổi
+
+select *
+from students
+where address = 'Đắk lak'; #Hiển thị những học viên có quê ở đăk lak
+
+select *
+from students
+where address <> 'Đắk lak'; # Hiển thị những học viên có quê không phải đăk lak
+
+select *
+from students
+where name like 'C%'; #Hiển thị học viên có tên bắt đầu bằng chữ C
+
+select *
+from students
+where name = 'Cường'; #Hiển thị học viên có tên cường
+
+select *
+from students
+ORDER BY name DESC;#Sắp xếp theo tên từ Z->A , ASC là từ A->Z
+
+select *
+from students
+ORDER BY age;#Sắp xếp theo tuổi tăng dần
+
+select s.class_id, c.name, count(s.class_id)
+from students s
+         join classes c on s.class_id = c.id
+group by s.class_id, c.name;#tính tổng số học sinh của mỗi lớp
+
+select s.class_id, c.name, count(s.class_id) as totalstudent
+from students s
+         join classes c on s.class_id = c.id
+group by s.class_id, c.name
+HAVING totalstudent >= all (select count(class_id) from students group by students.class_id);#Hiển thị lớp có tổng học sinh nhiều nhất
+
+select s.class_id, c.name, count(s.class_id) as totalstudent
+from students s
+         join classes c on s.class_id = c.id
+group by s.class_id, c.name
+HAVING totalstudent <= all (select count(class_id) from students group by students.class_id);#Hiển thị lớp có tổng số học viên ít nhất
+
+select address, count(address)
+from students
+group by address;#Hiển thị tổng số học sinh theo địa chỉ
+
+select s.class_id, c.name, count(s.class_id) as totalstudent
+from students s
+         join classes c on s.class_id = c.id
+group by s.class_id, c.name
+HAVING totalstudent > 2;#Hiển thị lớp có số lượng học viên lớn hơn 2
+
+select address, count(address) totalstudent
+from students
+group by address
+HAVING totalstudent > 2;#Hiển thị tỉnh có số lượng học viên lớn hơn 2
+
+select *, max(age) maxAge
+from students
+group by id
+HAVING maxAge >= (select max(age) from students);#hiển thị học viên có tuổi lớn nhất
+
+select *, min(age) minAge
+from students
+group by id
+HAVING minAge <= (select min(age) from students);#hiển thị học viên có tuổi nhỏ nhất
+
+delete
+from students
+where address = 'Đà Nẵng';#Xóa những học viên có quê Đà Nẵng
+
+update students
+set id = 7
+where name = 'Hoa';#Sửa id thành 7 với điều kiện hàng đó có tên Hoa
+
+update students
+set id = 8
+where name = 'Quỳnh';
+
+update students
+set id = 9
+where name = 'Thảo';
+
+select *
+from students
+where age = (select max(age)
+             from students
+             where age < (select max(age) from students));#Hiển thị học viên có tuổi lớn thứ 2
+
+select *
+from students
+where age = (select min(age)
+             from students
+             where age > (select min(age) from students));#Hiển thị học viên có tuổi nhỏ thứ 2
